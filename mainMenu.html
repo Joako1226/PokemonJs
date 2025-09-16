@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Pokémon Menu</title>
+     <link rel="icon" href="../pokeball_icon.png">
+  <style>
+    @font-face {
+      font-family: "pokemon_pixel_font";
+      src: url('./Pixellari.ttf');
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "pokemon_pixel_font";
+    }
+
+    body {
+      background-image: url("Images/forestOfPokemonwallpaper.png");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      padding-bottom: 60px;
+    
+    }
+
+    .menu {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 20px 40px;
+      border: 2px solid black;
+scale: 1.2;
+ transform: translateY(-40px);
+    }
+
+    .menu a, .menu button {
+      text-decoration: none;
+      background: white;
+      color: black;
+      border: 2px solid black;
+      padding: 10px 40px;
+      font-size: 20px;
+      cursor: pointer;
+      transition: all 0.15s ease-in-out;
+    }
+
+    .menu a:hover, .menu button:hover {
+      filter: brightness(0.9);
+      scale: 1.03;
+      border: 3px solid black;
+    }
+
+    #infoBox {
+      position: fixed;
+      display: none;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0, 0, 0, 0.85);
+      color: white;
+      padding: 30px;
+      width: 400px;
+      border: 2px solid white;
+      text-align: center;
+      z-index: 1000;
+    }
+
+    #infoBox .close-btn {
+      position: absolute;
+      top: 5px;
+      right: 10px;
+      background: red;
+      color: white;
+      border: none;
+      font-size: 16px;
+      font-family: inherit;
+      padding: 2px 8px;
+      cursor: pointer;
+    }
+
+    audio {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Música -->
+  <audio id="bg-music" autoplay loop>
+    <source src="/sound/opening.mp3" type="audio/mpeg">
+    Tu navegador no soporta audio HTML5.
+  </audio>
+
+  <div class="menu">
+    <a href="index.html">Comenzar</a>
+    <button onclick="mostrarInfo()">Información</button>
+    <footer>Joaquín Gutiérrez, 2025 Proyecto final de sintesis</footer>
+  </div>
+
+  <div id="infoBox">
+    <button class="close-btn" onclick="cerrarInfo()">X</button>
+    <h2>Información</h2>
+    <p>El objetivo de este pequeño juego es derrotar a los 3 lideres que encontraras por el mapa. <br> <p> <br></p>Pero no sera fácil, busca pokémon salvajes por la hierba para combatir con ellos y hacerte mas fuerte.</p>
+ 
+</div>
+ 
+
+  <script>
+    function mostrarInfo() {
+      document.getElementById('infoBox').style.display = 'block';
+    }
+
+    function cerrarInfo() {
+      document.getElementById('infoBox').style.display = 'none';
+    }
+
+    window.addEventListener('click', () => {
+      const music = document.getElementById('bg-music');
+      if (music.paused) {
+        music.play().catch(() => {});
+      }
+    });
+  </script>
+
+</body>
+</html>

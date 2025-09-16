@@ -1,0 +1,2384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="Maps.js"></script>
+    <script src="Stats.js"></script>
+    <title>Forest of Pokémon</title>
+    <link rel="icon" href="../pokeball_icon.png">
+    <style>
+
+    /* escenes */
+        #canvasmapa{
+            display: block;
+        }
+        #canvasbattle{
+            display: none;
+        }
+
+
+        
+        @font-face {
+        font-family: "pokemon_pixel_font";
+        src: url(./Pixellari.ttf);
+        
+    }
+
+    /* Mapa */
+    *{
+    margin: 0;
+    padding: 0;
+    user-select: none;
+    font-family: "pokemon_pixel_font";
+    color: rgb(13, 13, 14);
+  
+    }
+
+        #stage {
+         
+        
+        }
+
+        .cell {
+            position: fixed;
+            width: 48px;
+            height: 48px;
+            background-color:   rgb(112, 191, 159);
+        }
+        .cell:hover{
+
+        }
+        
+        #output{
+            display: none;
+            background-color: rgba(0, 0, 0, 0.385);
+            color: white;
+            align-content: center;
+            padding: 10px;
+            transform: translateX(255px) translateY(520px);
+         
+            width: 980px;
+            margin: 0px;
+            text-align: center;
+            
+            
+            img{
+                float: left;
+                margin: 10px;
+            }
+           
+            
+        }
+
+        #info{
+            display: none;
+            background-color: rgba(0, 0, 0, 0.385);
+            color: white;
+            align-content: center;
+            padding: 10px;
+            height: 680px;
+            transform: translateX(420px) translateY(20px);
+         
+            width: 576px;
+            margin: 0px;
+            text-align: center;
+            border-style: solid;
+            border-color: black;
+        }
+        input{
+            width: 35px;
+            height: 35px;
+        }
+
+            body {
+            background-image: url("Images/Battle/Background.png");
+            background-repeat: no-repeat;
+            background-size: cover;  
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+      
+            }
+            
+            
+        #enemyGif{
+       
+           
+         
+         
+        }
+
+            .battle-container {
+              display: flex;
+              flex-direction: column;
+              justify-content: space-between;
+              height: 100vh;
+              padding: 20px;
+              box-sizing: border-box;
+            }
+    
+            .top-row {
+              display: flex;
+              justify-content: space-between;
+              align-items: flex-start;
+            }
+    
+            .info-box, .sprite-box {
+              padding: 20px;
+              width: 400px;
+             
+            
+            }
+            .info-box{
+                background: white;
+              border: 2px solid black;
+              
+            }
+            .sprite-box {
+              width: 220px;
+              height: 200px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              background-image: url("Images/Battle/circle.png");
+              background-size: 100%;
+              background-repeat: no-repeat;
+              background-position-y: 110px;
+              img{
+            height: 80%;
+            transform: translateY(20px);
+            transition: all 0.2s;
+            user-select: none;
+          
+              }
+           
+            }
+    
+            .middle-row {
+              display: flex;
+              justify-content: space-between;
+              align-items: flex-end;
+              margin: 0;
+            }
+    
+            .textbox {
+              background: white;
+              border: 2px solid black;
+              padding: 15px;
+              margin-top: 20px;
+              font-style: italic;
+              font-size: 18px;
+              height: 200px;
+              display: flex;
+            }
+    
+            #options {
+                
+              display: grid;
+              grid-template-columns: repeat(4, 1fr);
+             margin: 0 auto;
+              gap: 2px;
+              .btn{
+                width: 120px;
+                    text-transform: capitalize;
+                }
+               
+              
+            }
+            #atacks, #items{
+              display: grid;
+              grid-template-columns: repeat(4, 2fr);
+              gap: 15px;
+              margin-top: 10px;
+              text-align: center;
+              
+            
+            }
+            #items{
+                display: none;
+               
+            }
+            .btn {
+              background: white;
+              border: 2px solid black;
+              padding: 10px;
+              margin: 5px;
+              text-align: center;
+              font-weight: bold;
+              cursor: pointer;
+              height: 70px;
+              align-content: center;
+              transition: 0.1s;
+              
+            }
+    
+            .btn:hover {
+              filter:brightness(0.8);
+              border: 5px solid rgb(0, 0, 0);
+              scale: 1.03;
+            }
+
+            
+
+            audio{
+                display: none;
+            }
+            progress{
+             transition: all 0.3s ease-out;
+             height: 12px;
+             width: 90%;
+             border: 2px solid black;
+          
+            transform: translateY(-5px);
+            }
+          
+            progress::-webkit-progress-bar {
+            background-color: rgb(148, 148, 148); 
+            
+            }
+
+
+
+            .barXp{
+                progress::-webkit-progress-value {
+                background-color: #33ff81; 
+            
+            }
+
+
+            #boutique{
+                
+            }
+            } 
+
+            .barPs{
+            progress::-webkit-progress-value {
+                background-color: #33a7ff; 
+            
+            }
+        }
+          
+
+            progress::-moz-progress-bar {
+            background-color: #33ffff;
+            }
+
+        #transition{
+            position:absolute;
+            img{
+                height: 100vh;
+                width: 100vw;
+                z-index: 7;  
+            }
+
+       
+           
+        }
+
+    </style>
+  
+</head>
+
+<body>
+    
+    <audio id="music" controls>
+    <source id="actualMusic" type="audio/wav" src="sound/ForestMusic.wav">
+    </audio> 
+   
+    <!-- mapa -->
+    <div id="canvasmapa">
+        <div id="stage"></div>
+        <div id="output"> <img src="gyarados.gif" style=" width: 100px; height: 100px;"> <br> yo soy listo y tu tonto yo soy listo y tu tonto yo soy listo y tu tontoyo soy listo y tu tontoyo soy listo y tu tontoyo soy listo y tu tontoyo soy listo y tu tontoyo soy listo y tu tontoyo soy listo y tu tontoyo soy listo y tu tontoyo soy listo y tu tontoyo soy listo y tu tontoyo soy listo y tu tonto  yo soy listo y tu tontoyo soy listo y tu tonto  yo soy listo y tu tonto yo soy listo y tu tonto yo soy listo y tu tonto yo soy listo y tu tonto </div>
+        <div id="info"><img src="/Images/Pokemon_Sprites/pikachu.gif" style="transform: translateX(32px);"> <br> Pikachu level 5f </div>
+   
+    </div>
+    
+    <!-- batalla -->
+    <div id="canvasbattle">
+        <div class="battle-container">
+    
+          <div class="top-row">
+            <div class="info-box" id="enemy-info">
+                <p>Missingno  Nv?<br>
+                PS: 69/69 </p>
+            </div>
+            <div class="sprite-box" ><img id="enemyGif" src="https://art.ngfiles.com/images/3041000/3041210_victorfunnyman2_buggymess-missingno-sprites-lullaby-cursed-edition-v3.gif?f1676147111"  alt="tangela"></div>
+          </div>
+    
+          <div class="middle-row">
+            
+            <div class="sprite-box"><img src="/Images/Pokemon_Sprites/pikachu.gif" alt="pikachu" style="transform: scaleX(-1) translateX(25px) translateY(-5px) scale(1.2);"></div>
+           
+            <div class="info-box" id="pikachu-info">
+                
+              <p> Pikachu  Nv1 <br> <br>
+                <div class="barXp">
+                    <progress max=${maxHealth} value= ${actualHealth}></progress>
+                </div>
+                
+                <div class="barPs">
+                     <progress max=${newLevel} value= ${xp}></progress>
+                </div>
+              
+              <p>PS: 69/69 </p></p>
+              
+            </div>
+            
+          </div>
+
+          <div class="textbox" id="battleOutput">
+            ¿Qué hará Pikachu?
+          </div>
+
+    <div id="atacks">
+        <button class="btn" style="background-color: rgb(255, 191, 0);">Rayo⚡</button>
+        <button class="btn" style="background-color: rgb(255, 191, 0);">Impactrueno⚡</button>
+        <button class="btn" style="background-color: rgb(133, 133, 133);">Cola ferrea</button>
+        <button class="btn" style="background-color: rgb(255, 255, 255);">Esquivar</button>
+      </div>
+      <div id="items">
+        <button class="btn" style="background-color: rgb(0, 110, 255);" onclick="heal(potions)">Pocion🧪 </button>
+        <button class="btn" style="background-color: rgb(106, 57, 141);" onclick="heal(hyperpotions)">Hiperpocion🔮</button>
+        <button class="btn" style="background-color: rgb(228, 52, 52);">Caramelo raro🍬</button>
+        <button class="btn" style="background-color: rgb(255, 255, 255);">Piedra</button>
+      </div>
+      <div id="options">
+        <button onclick="showAtacks()" class="btn" style="background-color: rgb(229, 61, 61);">LUCHAR</button>
+        <button onclick="showItems()" class="btn" style="background-color: rgb(255, 191, 0);">MOCHILA</button>
+        <button onclick="escape()" class="btn" style="background-color: rgb(80, 101, 218);">HUIR</button>
+      </div>
+      
+   
+</div>
+         
+
+    <script>
+        window.addEventListener("keydown", keydownHandler, false);
+        var numAtaques = [];
+
+        var audio = document.getElementById("music");
+        var sfx = document.getElementById("sfx");
+
+        // Controles
+        var UP = 87, DOWN = 83, LEFT = 65, RIGHT = 68, E = 69, F = 70;
+        var buttons = document.querySelectorAll("button");
+
+        // Elementos
+        var stage = document.querySelector("#stage");
+        var output = document.querySelector("#output");    
+
+        var numberMap = 4;
+        var map = mapsList[numberMap];
+        console.log(numberMap)  
+        var gameObjects = [
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 125, 69, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        ];
+        render();
+
+        // Tiles del mapa
+        var low_grass = 0, high_grass = 1, flower = 2, fences = 3, rock = 4, object = 5, treeLT = 10, treeRT = 11, treeLD = 12, treeRD = 13, bush = 14;
+        var player = 69
+        var pikachu = 125;
+        var brock = 50, joy = 51, misty = 52, oak = 53; starmy = 121, chansey = 113, geodude = 164, mewtwo = 151;
+        var water1 = 20, water2 = 21, water3 = 22, water4 = 23, water5 = 24, water6 = 25, water7 = 26, water8 = 27, water9 = 28;
+        var mountain1 = 30, mountain2 = 31, mountain3 = 32, mountain4 = 33, mountain5 = 34, mountain6 = 35, mountain7 = 36, mountain8 = 37, mountain9 = 38;
+
+        
+        // Tamaño de la celda
+        var Size = 48;
+
+        // Número de filas y columnas
+        var ROWS = map.length;
+        var COLS = map[0].length;
+
+        var playerRow;
+        var playerColumn;
+        var pokemonRow;
+        var pokemonColumn;
+        var pikachu_sprite = "Images/Pokemon_Sprites/pikachu/pikachu_Right.png";
+
+        var player_sprite = "Images/Player_Sprites/PlayerRight.png";
+
+
+        var win, lose;
+        var effect = "";
+       
+
+        var pokemonEncounter = 0;
+       
+        //items
+        
+        var potions = 1;
+        var hyperPotions = 0;
+        var rareCandy = 0;
+        var stone = 2;
+
+        //stats pikachu
+    var level = 5;
+    var xp = 0;
+    var sumxp;
+    var maxHealth = parseInt((level) * (-0.01 * level + 2.4));
+    var actualHealth = maxHealth;
+    var strength = Math.floor(level * 4.4);
+    var newLevel = 10;
+    
+    //stats enemigo
+    var levelEnemy = 69;
+    var maxHealthEnemy = 69;
+    var actualHealthEnemy = 69;
+    var strenghtEnemy = 69;
+    var nameEnemy = "Misingno";
+    var gifEnemy = document.getElementById("enemyGif");
+
+    var pikachuInfoBox = document.getElementById("pikachu-info");
+    var enemyInfoBox = document.getElementById("enemy-info");
+
+    //posicion del jugrador +-1
+    var playerUp, playerLeft, playerDown, playerRight
+
+    //lista de los objetos qeu colisionan
+    const collidableObjects = [rock, fences, treeLT, treeRT, treeLD, treeRD, bush, water1, water2, water3, water4, water5, water6, water7, water8, water9, mountain1, mountain2, mountain3, mountain4, mountain5, mountain6, mountain7, mountain8, mountain9, joy, brock, oak, misty, mewtwo, chansey, starmy, geodude];
+
+
+
+    var type = "🔘";
+    
+    var gold = 5000;
+    var price;
+    var buyPotion;
+    var buyHyperpotion; 
+    var buyRareCandy; 
+    var buyStone;
+
+
+    
+var allAtacks = [
+  '<button onclick="atack(\'rayo\')" class="btn" style="background-color: rgb(255, 191, 0);">Rayo⚡</button>',
+  '<button onclick="atack(\'placaje\')" class="btn" style="background-color: rgb(192, 192, 192);">Placaje🔘</button>',
+  '<button onclick="atack(\'gruñido\')" class="btn" style="background-color: rgb(192, 192, 192);">Gruñido🔘</button>',
+  '<button onclick="atack(\'danza espada\')" class="btn" style="background-color: rgb(192, 192, 192);">Danza Espada🔘</button>',
+  '<button onclick="atack(\'impactrueno\')" class="btn" style="background-color: rgb(255, 191, 0);">Impactrueno⚡</button>',
+  '<button onclick="atack(\'cola férrea\')" class="btn" style="background-color: rgb(112, 112, 112);">Cola Férrea⚙️</button>',
+  '<button onclick="atack(\'giga impacto\')" class="btn" style="background-color: rgb(255, 191, 0);">Giga Impacto⚡</button>',
+  '<button onclick="atack(\'tajo aereo\')" class="btn" style="background-color: rgb(255, 191, 0);">Tajo Aereo🪶</button>',
+  '<button onclick="atack(\'avalancha\')" class="btn" style="background-color: rgb(135, 206, 235);">Avalancha🪨</button>',
+  '<button onclick="atack(\'escavar\')" class="btn" style="background-color: rgb(139, 69, 19);">Escavar🏔️</button>',
+  '<button onclick="atack(\'carantoña\')" class="btn" style="background-color: rgb(255, 182, 193);">Carantoña🧚‍♀️</button>',
+  '<button onclick="atack(\'demolicion\')" class="btn" style="background-color: rgb(255, 69, 0);">Demolicion👊</button>',
+  '<button onclick="atack(\'ladron\')" class="btn" style="background-color: rgb(25, 25, 25); color: white;">Ladron🌑</button>',
+  '<button onclick="atack(\'puño trueno\')" class="btn" style="background-color: rgb(255, 191, 0);">Puño Trueno⚡</button>'
+]
+
+    var numAtaques = [0,1,2,3];
+
+    var atackSet = [
+        [allAtacks[numAtaques[0]]]+
+        [allAtacks[numAtaques[1]]]+
+        [allAtacks[numAtaques[2]]]+
+        [allAtacks[numAtaques[3]]]
+   
+        
+    ]
+    var atackType;
+
+   
+
+    var timerWait = 0;
+        
+        
+   
+
+   
+        render();
+
+
+    function fullRestore(){
+        actualHealth = maxHealth;
+        music.setAttribute("src", "sound/Heal.mp3");
+        audio.play();
+        output.innerHTML =` 
+                <img src="/Images/NPC/ProfilePics/JoyProfile.png" style=" width: 100px; height: 100px;"> <b>Enfermera joy </b> <p><br></p> <p> Tus pokemon han sido restaurados </p> <p><br></p> <p><br></p><p><br></p><p><br></p><p>
+                `;
+        setTimeout(function(){   
+            music.setAttribute("src", "sound/ForestMusic.wav");
+            audio.play();
+            output.innerHTML =` 
+                <img src="/Images/NPC/ProfilePics/JoyProfile.png" style=" width: 100px; height: 100px;"> <b>Enfermera joy </b> <p> <br></p> <p> Hola, que servicio necesitavas?</p> <button  onclick="fullRestore()" class="btn" style="background-color: rgb(255, 110, 255);">Curar a tu pokemon</button> <button onclick="changeAtacks" class="btn" style="background-color: rgb(100, 110, 255);">Cambiar movimientos</button>
+                `;
+        },1900);
+       
+    }
+
+    function changeAtacks(){
+        output.innerHTML = `
+  <img src="/Images/NPC/ProfilePics/JoyProfile.png" style="width:100px;height:100px;">
+  <b>Enfermera joy</b>
+  <p><br></p>
+  <p>Que movimientos deseas cambiar?</p>
+  <div style="display:flex;justify-content:center;">
+    <div style="overflow-x:auto;white-space:nowrap;width:100%;max-width:500px;" id="s">
+  ${
+    [
+      "⚡Rayo",
+      "🔘Placaje",
+      "🔘Gruñido",
+      "🔘Danza Espada",
+      "⚡Impactrueno",
+      "⚙️Cola Ferrea",
+      "⚡Gigaimpacto",
+      "🪶Tajo aereo",
+      "🪨Avalancha",
+      "🏔️Escavar",
+      "🧚‍♀️Carantoña",
+      "👊Demolicion",
+      "🌑Ladron",
+      "⚡Puño trueno"
+    ]
+      .map(
+        (n, i) =>
+          `<label><input type='checkbox' class='m' data-i='${i}' onchange="if(document.querySelectorAll('.m:checked').length>4)this.checked=false; numAtaques = Array.from(document.querySelectorAll('.m:checked')).map(e => parseInt(e.dataset.i));"> ${n} </label>`
+      )
+      .join("")
+  }
+</div>
+
+  </div>
+`;
+
+
+
+
+       
+    }
+
+
+    function keydownHandler(event){
+    switch (event.keyCode) {
+        
+        case UP:
+              player_sprite = "Images/Player_Sprites/PlayerUp.png";
+            if (collidableObjects.includes(map[playerRow - 1][playerColumn])) break;
+
+            gameObjects[pokemonRow][pokemonColumn] = 0;
+            pokemonColumn = playerColumn;
+            pokemonRow = playerRow;
+            playerRow--;
+            gameObjects[playerRow][playerColumn] = 69;
+          
+            pikachu_sprite = "Images/Pokemon_Sprites/Pikachu/pikachu_Up.png";
+            gameObjects[pokemonRow][pokemonColumn] = 125;
+            document.getElementById("output").style.display = 'none';
+            break;
+
+        case DOWN:
+            player_sprite = "Images/Player_Sprites/PlayerDown.png";
+            if (collidableObjects.includes(map[playerRow + 1][playerColumn])) break;
+
+            gameObjects[pokemonRow][pokemonColumn] = 0;
+            pokemonColumn = playerColumn;
+            pokemonRow = playerRow;
+            playerRow++;
+            gameObjects[playerRow][playerColumn] = 69;
+          
+            pikachu_sprite = "Images/Pokemon_Sprites/Pikachu/pikachu_Down.png";
+            gameObjects[pokemonRow][pokemonColumn] = 125;
+            document.getElementById("output").style.display = 'none';
+            break;
+
+        case LEFT:
+              player_sprite = "Images/Player_Sprites/PlayerLeft.png";
+            if (collidableObjects.includes(map[playerRow][playerColumn - 1])) break;
+
+            gameObjects[pokemonRow][pokemonColumn] = 0;
+            pokemonColumn = playerColumn;
+            pokemonRow = playerRow;
+            playerColumn--;
+            gameObjects[playerRow][playerColumn] = 69;
+          
+            pikachu_sprite = "Images/Pokemon_Sprites/Pikachu/pikachu_left.png";
+            gameObjects[pokemonRow][pokemonColumn] = 125;
+            document.getElementById("output").style.display = 'none';
+            break;
+
+        case RIGHT:
+            player_sprite = "Images/Player_Sprites/PlayerRight.png";
+            if (collidableObjects.includes(map[playerRow][playerColumn + 1])) break;
+
+            gameObjects[pokemonRow][pokemonColumn] = 0;
+            pokemonColumn = playerColumn;
+            pokemonRow = playerRow;
+            playerColumn++;
+            gameObjects[playerRow][playerColumn] = 69;
+            
+            pikachu_sprite = "Images/Pokemon_Sprites/Pikachu/pikachu_right.png";
+            gameObjects[pokemonRow][pokemonColumn] = 125;
+            document.getElementById("output").style.display = 'none';
+            break;
+
+
+            case E:
+    if (numberMap == 4) {
+        if ((playerUp == joyRow && playerColumn == joyColumn) ||
+            (playerDown == joyRow && playerColumn == joyColumn) ||
+            (playerRight == joyColumn && playerRow == joyRow) ||
+            (playerLeft == joyColumn && playerRow == joyRow)) {
+            
+            interact("joy");
+        }
+
+        if ((playerUp == oakRow && playerColumn == oakColumn) ||
+            (playerDown == oakRow && playerColumn == oakColumn) ||
+            (playerRight == oakColumn && playerRow == oakRow) ||
+            (playerLeft == oakColumn && playerRow == oakRow)) {
+            
+            interact("oak");
+        }
+    }
+
+     if (numberMap == 2) {
+        if ((playerUp == brockRow && playerColumn == brockColumn) ||
+            (playerDown == brockRow && playerColumn == brockColumn) ||
+            (playerRight == brockColumn && playerRow == brockRow) ||
+            (playerLeft == brockColumn && playerRow == brockRow)) {
+            
+            interact("brock");
+        }
+     }
+
+
+                break;
+
+            case F:
+                
+                if (document.getElementById("info").style.display == 'none'){
+                    var info = document.getElementById("info");
+                    info.style.display = 'block'
+                 info.innerHTML = `
+
+  <div style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
+    
+    <!-- Entrenador y medalles -->
+    <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
+      <img src="https://i1.sndcdn.com/artworks-Pcsx6B0avEVYHzT5-IzJGzQ-t500x500.jpg" alt="Entrenador" style="height: 120px; margin-left: 10px;">
+      
+      <div style="display: flex; gap: 10px; margin-right: 10px;">
+        <img src="/Images/Medals/Medalla_Roca.png" style="height: 40px;"> <p>❌</p>
+        <img src="/Images/Medals/Medalla_Cascada.png" alt="Medalla 2" style="height: 40px;"><p>❌</p>
+        <img src="/Images/Medals/Medalla_Tierra.png" alt="Medalla 3" style="height: 40px;"><p>❌</p>
+      </div>
+    </div>
+
+    <!-- Sprite -->
+    <div class="sprite-box" style="margin-top: 10px;">
+      <img src="/Images/Pokemon_Sprites/pikachu.gif" alt="Pikachu">
+    </div>
+
+    <!-- Info Pokémon -->
+    <div class="info-box" style="width: 90%; margin-top: 10px;">
+      <h3 style="margin-bottom: 10px;">Pikachu - Nivel ${level}</h3>
+      <p>Puntos de salud: ${actualHealth} / ${maxHealth}</p>
+      <p>Ataque: ${strength}</p>
+      <p>Oro: ${gold}</p>
+    </div>
+
+    <!-- Botones -->
+    <div style="display: flex; justify-content: space-around; width: 100%; margin-top: 20px;">
+         <button class="btn" onclick="heal('potion')" style="background-color: rgb(0, 110, 255);">Poción🧪  x${potions}</button>
+    <button class="btn" onclick="heal('hyperpotion')" style="background-color: rgb(156, 44, 236);">Hiperpoción🔮 x${hyperPotions}</button>
+    <button class="btn" onclick="heal('rareCandy')" style="background-color: rgb(228, 52, 52);">Caramelo raro🍬 x${rareCandy}</button>
+    </div>
+    
+  </div>
+`;
+render()
+                } 
+                else{
+                    document.getElementById("info").style.display = 'none'
+                }
+            break;
+    
+}
+
+
+
+    
+    
+
+    
+
+   
+
+     //detectar objeto que se esta pisando
+     switch(map[playerRow][playerColumn])
+    {  
+        case object:
+            
+            interact("item")
+            player_sprite = "/Images/Player_Sprites/PlayerItem.png"
+            break;
+            
+        case high_grass:
+            var random = Math.random();
+
+            if(random > 0.8 && actualHealth > 0){
+            if (numberMap === 4){
+                pokemonEncounter = Math.floor(Math.random() * 3);
+              
+            }
+            else if (numberMap === 5){
+                pokemonEncounter = Math.floor(Math.random() * 3) + 3;
+
+            }
+
+            else if (numberMap === 8){
+                pokemonEncounter = Math.floor(Math.random() * 3) + 6;
+
+            }
+             else if (numberMap === 2){
+                pokemonEncounter = Math.floor(Math.random() * 3) + 9;
+
+            }
+            else if (numberMap === 7){
+                pokemonEncounter = Math.floor(Math.random() * 3) + 12;
+
+            }
+             else if (numberMap === 6){
+                pokemonEncounter = Math.floor(Math.random() * 3) + 15;
+
+            }pokemonbattle()
+        break;
+        }
+      
+        
+
+      
+           
+    }
+
+    //Cambiar mapa si sale de la pantalla
+    if(playerColumn >= COLS){
+        numberMap++;
+    map = mapsList[numberMap];
+    gameObjects[pokemonRow][pokemonColumn] = 0;
+            gameObjects[playerRow][playerColumn] = 0;
+            pokemonColumn = -1;
+            pokemonRow = playerRow;
+            playerColumn = 0;
+            gameObjects[playerRow][playerColumn] = 69;
+            gameObjects[pokemonRow][pokemonColumn] = 125;
+            
+    render();
+    }
+    else if(playerColumn < 0){
+        numberMap--;
+        map = mapsList[numberMap];
+        gameObjects[pokemonRow][pokemonColumn] = 0;
+            gameObjects[playerRow][playerColumn] = 0;
+            pokemonColumn = COLS;
+            pokemonRow = playerRow;
+            playerColumn = COLS-1;
+            gameObjects[playerRow][playerColumn] = 69;
+            gameObjects[pokemonRow][pokemonColumn] = 125;
+            
+    render();
+    }
+
+    if (playerRow >= ROWS-1){
+         render();
+        numberMap += 3;
+    map = mapsList[numberMap];
+    gameObjects[pokemonRow][pokemonColumn] = 0;
+            gameObjects[playerRow][playerColumn] = 0;
+            pokemonRow = 0;
+            pokemonColumn = playerColumn;
+            playerRow = 1;
+            gameObjects[playerRow][playerColumn] = 69;
+            gameObjects[pokemonRow][pokemonColumn] = 125;
+            
+   
+    }
+    else if (playerRow < 1) {
+    numberMap -= 3;
+    map = mapsList[numberMap];
+    gameObjects[pokemonRow][pokemonColumn] = 0;
+    gameObjects[playerRow][playerColumn] = 0;
+    pokemonRow = ROWS - 1;
+    pokemonColumn = playerColumn;
+    playerRow = ROWS - 2;
+    gameObjects[playerRow][playerColumn] = 69;
+    gameObjects[pokemonRow][pokemonColumn] = 125;
+    render();
+}
+
+    
+
+    if (UP || DOWN || LEFT || RIGHT){
+
+
+    
+        render();
+    }
+    
+        }
+
+
+ 
+
+
+
+    function interact(person){
+        
+        switch (person){
+            case "joy":
+            output.innerHTML =` 
+                <img src="/Images/NPC/ProfilePics/JoyProfile.png" style=" width: 100px; height: 100px;"> <b>Enfermera joy </b> <p> <br></p> <p> Hola, que servicio necesitavas?</p> <button  onclick="fullRestore()" class="btn" style="background-color: rgb(255, 110, 255);">Curar a tu pokemon</button> <button onclick="changeAtacks()" class="btn" style="background-color: rgb(100, 110, 255);">Cambiar movimientos</button>
+                `;
+                break;
+                
+            case "oak":
+            output.innerHTML =` 
+                <img src="/Images/NPC/ProfilePics/OakProfile.png" style=" width: 100px; height: 100px;">  <div id="boutique">
+            <p><br></p> 
+                <b>Profesor Oak</b>
+                <p></p><br>
+            <p>Hola, ¿qué se te ofrece muchachón?</p> 
+            <br>
+
+            <p>
+                <input type="number" id="pociones" min="0" max="99" value="0"> Pociones
+                <input type="number" id="hiperpociones" min="0" max="99" value="0"> Hiperpociones 
+                <input type="number" id="caramelos" min="0" max="99" value="0"> Caramelos Raros
+                <input type="number" id="piedras" min="0" max="99" value="0"> Piedra
+            </p>
+            <br>
+         
+            </div>
+               <button class="btn" onclick="buy()" style="height: 32px">Comprar</button>
+                `;
+                break;
+                
+
+          case "brock":
+            output.innerHTML =` 
+                <img src="/Images/NPC/ProfilePics/BrockProfile.png" style=" width: 100px; height: 100px;">  <div id="boutique">
+            <p><br></p> 
+                <b>Lider Brock</b>
+                <p></p><br>
+            <p>Hola, quieres luchar por la medalla de tipo roca?</p> 
+            <br>
+                    
+            <button onclick="bossBattle('brock')" class="btn" style="background-color: rgb(100, 110, 255);">Sí</button>
+                 <button onclick="" class="btn" style="background-color: rgb(255, 11, 25);">No</button>
+            <br>
+         
+            </div>
+              
+                `;
+                break;      
+
+            case"item":
+            output.innerHTML =` 
+            
+            <p><br></p> 
+                <p></p><br>
+            <p>Has encontrado una pocion</p> 
+            <br>
+                 <p>La agarras?</p>    
+            <button class="btn" style="background-color: rgb(100, 110, 255);">Sí</button>
+                 <button onclick="" class="btn" style="background-color: rgb(255, 11, 25);">No</button>
+            <br>
+         
+            </div>
+              
+                `;
+            break;
+        }
+
+    
+
+       if (document.getElementById("output").style.display === 'none'){
+        document.getElementById("output").style.display = 'block'
+       }
+       else{
+        document.getElementById("output").style.display = 'none'
+       }
+        
+    
+    }
+    function render() {
+        
+
+         for (var row = 0; row < ROWS; row++){    
+        for (var col = 0; col < COLS; col++){
+            if (gameObjects[row][col] === player){
+                playerRow = row;
+                playerColumn = col;    
+            }
+            if (gameObjects[row][col] === pikachu){
+                pokemonRow = row;
+                pokemonColumn = col;    
+            }
+            if (mapsList[numberMap][row][col] === joy){
+                joyRow = row;
+                joyColumn = col;    
+            }
+            if (mapsList[numberMap][row][col] === oak){
+                oakRow = row;
+                oakColumn = col;    
+            }
+            if (mapsList[numberMap][row][col] === brock) {
+                brockRow = row;
+                brockColumn = col;
+            }
+
+
+        }
+    }
+        audio.play();
+      
+       
+        while (stage.firstChild) {
+        stage.removeChild(stage.firstChild)
+        }
+
+    playerUp = playerRow-1;
+    playerLeft = playerColumn-1;
+    playerDown = playerRow+1;
+    playerRight = playerColumn+1;
+        
+
+    var itemsInfoBox = document.getElementById("items");
+    var AtacksInfoBox = document.getElementById("atacks");
+   
+
+
+    itemsInfoBox.innerHTML = `
+    <button class="btn" onclick="heal('potion')" style="background-color: rgb(0, 110, 255);">Poción🧪  x${potions}</button>
+    <button class="btn" onclick="heal('hyperpotion')" style="background-color: rgb(156, 44, 236);">Hiperpoción🔮 x${hyperPotions}</button>
+    <button class="btn" onclick="heal('rareCandy')" style="background-color: rgb(228, 52, 52);">Caramelo raro🍬 x${rareCandy}</button>
+    <button class="btn" onclick="heal('stone')" style="background-color: rgb(255, 255, 255);">Piedra x${stone}</button>
+`;
+
+
+
+    
+
+       
+AtacksInfoBox.innerHTML = atackSet;
+
+  
+
+    
+    pikachuInfoBox = document.getElementById("pikachu-info");
+    enemyInfoBox = document.getElementById("enemy-info");
+ 
+    pikachuInfoBox.innerHTML = `
+      <p> <b>⚡Pikachu  Nv.${level}</b><br> <br>
+       
+     
+              <div class="barXp">
+                    <progress max=${maxHealth} value= ${actualHealth}></progress>
+                </div>
+                 <p>PS: ${actualHealth}/${maxHealth}</p>
+                 <br>
+                <div class="barPs">
+                     <progress max=${newLevel} value= ${xp}></progress>
+                     <p> Xp: ${xp} / ${newLevel}</p>
+                </div>
+                
+		
+    `;
+    
+    enemyInfoBox.innerHTML =`
+   <p> <b>${nameEnemy}  Nv.${levelEnemy}</b><br> <br>
+       
+     
+              <div class="barXp">
+                    <progress max=${maxHealthEnemy} value= ${actualHealthEnemy}></progress>
+                </div>
+                 <p>PS: ${actualHealthEnemy}/${maxHealthEnemy}</p>
+                 <br>
+                <div class="barPs">
+                    <p> Type ${type}</p>
+                   
+    `;
+
+    
+    
+    battleOutput = document.getElementById("battleOutput");
+
+    
+
+
+
+    // Recorrer todo el mapa
+    for (var row = 0; row < ROWS; row++) {
+        for (var col = 0; col < COLS; col++) {
+            // Crear la celda
+            var cell = document.createElement("img");
+            cell.setAttribute("class", "cell");
+
+            // Imatges mapa
+            switch (map[row][col]) {
+                case low_grass:
+                    cell.src = "Images/Bg_Tiles/bggrass.png";
+                    break;
+                case high_grass:
+                    cell.src = "Images/Bg_Tiles/grass.gif";
+                    break;
+                case flower:    
+                        cell.src = "Images/Bg_Tiles/flowers.png";
+                    break;
+                case rock:
+                    cell.src = "Images/Bg_Tiles/rock.png";
+                    break;
+                case fences:
+                    cell.src = "Images/Bg_Tiles/vaya.png";
+                    break;
+                case object:
+                    cell.src = "Images/Bg_Tiles/object.png";
+                    
+                    break;
+                case treeLT:
+                        cell.src = "Images/Bg_Tiles/tree_top_left.png";
+                        break;
+                case treeRT:
+                        cell.src = "Images/Bg_Tiles/tree_bottom_left.png";
+                        break;
+                case treeLD:
+                        cell.src = "Images/Bg_Tiles/tree_top_right.png";
+                        break;
+                case treeRD:
+                        cell.src = "Images/Bg_Tiles/tree_bottom_right.png";
+                        break;
+                case bush:
+                        cell.src = "Images/Bg_Tiles/bush.png";
+                        break;
+
+
+                case water1:
+                        cell.src = "Images/Bg_Tiles/water1.png";
+                break;
+                case water2:
+                    cell.src = "Images/Bg_Tiles/water2.png";
+                    break;
+                case water3:
+                    cell.src = "Images/Bg_Tiles/water3.png";
+                    break;
+                case water4:
+                    cell.src = "Images/Bg_Tiles/water4.png";
+                    break;
+                case water5:
+                    cell.src = "Images/Bg_Tiles/water5.png";
+                    break;  
+                case water6:
+                    cell.src = "Images/Bg_Tiles/water6.png";
+                    break;
+                case water7:
+                    cell.src = "Images/Bg_Tiles/water7.png";
+                    break;
+                case water8:
+                    cell.src = "Images/Bg_Tiles/water8.png";
+                    break;
+                case water9:
+                    cell.src = "Images/Bg_Tiles/water9.png";
+                    break;
+
+                case mountain1:
+                    cell.src = "Images/Bg_Tiles/mountain1.png";
+                    break;
+                case mountain2:
+                    cell.src = "Images/Bg_Tiles/mountain2.png";
+                    break;
+                case mountain3:
+                    cell.src = "Images/Bg_Tiles/mountain3.png";
+                    break;
+                case mountain4:
+                    cell.src = "Images/Bg_Tiles/mountain4.png";
+                    break;
+                case mountain5:
+                    cell.src = "Images/Bg_Tiles/mountain5.png";
+                    break;
+                case mountain6:
+                    cell.src = "Images/Bg_Tiles/mountain6.png";
+                    break;
+                case mountain7:
+                    cell.src = "Images/Bg_Tiles/mountain7.png";
+                    break;
+                case mountain8:
+                    cell.src = "Images/Bg_Tiles/mountain8.png";
+                    break;
+                case mountain9:
+                    cell.src = "Images/Bg_Tiles/mountain9.png";
+                    break;
+
+
+
+                case brock:
+                        cell.src = "Images/NPC/Brock.png";
+                        break;
+                case geodude:
+                        cell.src = "Images/Pokemon_Sprites/geodude.png";
+                        break;
+                case joy:
+                        cell.src = "Images/NPC/joy.png";
+                        break;
+                case chansey:
+                        cell.src = "Images/Pokemon_Sprites/chansey.png";
+                        break;
+                case misty:
+                        cell.src = "Images/NPC/misty.png";
+                        break;
+                case starmy:
+                    cell.src = "Images/Pokemon_Sprites/starmy.png";
+                    break;
+                    case oak:
+                        cell.src = "Images/NPC/oak.png";
+                        break;
+                case mewtwo:
+                    cell.src = "Images/Pokemon_Sprites/Mewtoo.png";
+                    break;
+
+            }
+
+
+            // Imatges personatges
+            if (gameObjects[row][col] === player) {
+                cell.src = player_sprite;
+            }
+            if (gameObjects[row][col] === pikachu) {
+                cell.src = pikachu_sprite;
+            }
+
+            
+            // Com es posicionen les celdes a lescenari
+            cell.style.top = row * Size + "px";
+            cell.style.left = col * Size + "px";
+
+            // Afageix cada cela
+            stage.appendChild(cell);
+        }
+        
+    }
+
+}
+
+function buy(){
+    
+    buyPotion = document.getElementById("pociones").value
+    buyHyperpotion = document.getElementById("hiperpociones").value
+    buyRareCandy = document.getElementById("caramelos").value
+    buyStone = document.getElementById("piedras").value
+    price = (buyPotion*200) + (buyHyperpotion*400) + (buyRareCandy*1000) + (buyStone*50)
+    if (buyPotion>= 0 <=99 && buyHyperpotion>= 0 <=99 && buyRareCandy>= 0 <=99 && buyStone>= 0 <=99 && (buyPotion+buyHyperpotion+buyRareCandy+buyStone) > 0){
+        output.innerHTML =` 
+                <img src="/Images/NPC/ProfilePics/OakProfile.png" style=" width: 100px; height: 100px;">  <div id="boutique">
+  <p><br></p> 
+    <b>Profesor Oak</b>
+    <p></p><br>
+  <p>Quieres confirmar la compra por ${price}$</p> 
+  <p>Tienes ${gold}$
+  <br>
+
+  x${buyPotion}.Pociones | x${buyHyperpotion}.Hiperpociones | x${buyRareCandy}.Caramelos Raros | x${buyStone}.piedra
+  <br>
+  <button class="btn" onclick="buy2()" style="height:32px">Comprar</button>
+</div>
+                `;
+    }
+    
+    
+}
+function buy2(){
+if(gold >= price){
+    gold -= price;
+    potions += parseInt(buyPotion);
+    hyperPotions += parseInt(buyHyperpotion);
+    rareCandy += parseInt(buyRareCandy);
+    stone += parseInt(buyStone);
+    output.innerHTML =` 
+                <img src="/Images/NPC/ProfilePics/OakProfile.png" style=" width: 100px; height: 100px;">  <div id="boutique">
+  <p><br></p> 
+    <b>Profesor Oak</b>
+    <p></p><br>
+  <p>Gracias por la compra</p> 
+  <br>
+
+  <br>
+
+</div>
+                `;
+    efecto = new Audio('sound/sfx/Purchase.mp3'); 
+    efecto.play()
+         
+}
+else{
+    output.innerHTML =` 
+                <img src="/Images/NPC/ProfilePics/OakProfile.png" style=" width: 100px; height: 100px;">  <div id="boutique">
+  <p><br></p> 
+    <b>Profesor Oak</b>
+    <p></p><br>
+  <p>No tienes suficiente dinero</p> 
+  <br>
+
+  <br>
+
+</div>
+                `;
+}
+    
+    }
+
+
+function showmap() {
+
+    
+    
+        if ( document.getElementById("canvasmapa").style.display !== 'block'){
+            
+            music.setAttribute("src", "sound/ForestMusic.wav");
+        music.volume = 0.7
+        audio.play();
+            
+            setTimeout(function(){ 
+                window.addEventListener("keydown", keydownHandler, false);
+                document.getElementById("canvasmapa").style.display = 'block';
+                document.getElementById("canvasbattle").style.display = 'none';
+            },200);
+        
+        
+    }
+    else{
+        
+        music.setAttribute("src", "sound/BattleMusic.wav");
+       music.volume = 0.2
+       window.removeEventListener("keydown", keydownHandler, false);
+       audio.play();
+        setTimeout(function(){   
+            document.getElementById("canvasmapa").style.display = 'none';
+            document.getElementById("canvasbattle").style.display = 'block'; 
+        },1800);
+       
+      
+        
+    }
+
+   
+    
+
+      
+}
+    
+ 
+
+function showAtacks(){
+document.getElementById("atacks").style.display = 'grid'
+document.getElementById("items").style.display = 'none'
+
+}
+function showItems(){
+document.getElementById("items").style.display = 'grid'
+document.getElementById("atacks").style.display = 'none'
+inventoryObjects[0] += 1;
+render();
+}
+
+
+
+
+
+function pokemonbattle(){  
+
+document.getElementById("atacks").style.pointerEvents = 'auto';
+document.getElementById("atacks").style.opacity = '1';
+
+document.getElementById("items").style.pointerEvents = 'auto';
+document.getElementById("items").style.opacity = '1';
+
+document.getElementById("options").style.pointerEvents = 'auto';
+document.getElementById("options").style.opacity = '1';
+
+
+    efectivenes = 1;
+    
+   showmap();
+    render();
+
+    strength = Math.floor(level * 1.4);
+
+   atackSet = [
+        [allAtacks[numAtaques[0]]]+
+        [allAtacks[numAtaques[1]]]+
+        [allAtacks[numAtaques[2]]]+
+        [allAtacks[numAtaques[3]]]
+   
+        
+    ]
+   
+
+   newLevel = parseInt(maxHealth*2);
+ 
+    switch (pokemonEncounter){
+        
+        case 0:
+    nameEnemy = "Tangela";
+    gifEnemy.setAttribute("src", "Images/Pokemon_Sprites/tangela.gif");
+    type = "🌿"
+    levelEnemy = parseInt((Math.random()*4)+2)
+    maxHealthEnemy = parseInt((levelEnemy) * (-0.01 * levelEnemy + 2.4));
+    actualHealthEnemy = maxHealthEnemy;
+    strenghtEnemy = Math.floor(levelEnemy * 4.4);
+    atacksEnemy = ["latigo cepa", "absorber", "hoja afilada"]
+    break;
+
+case 1:
+    nameEnemy = "Cubone";
+    gifEnemy.setAttribute("src", "Images/Pokemon_Sprites/cubone.gif");
+    type = "🏔️"
+    levelEnemy = parseInt((Math.random()*4)+2)
+    maxHealthEnemy = parseInt((levelEnemy) * (-0.01 * levelEnemy + 2.4));
+    actualHealthEnemy = maxHealthEnemy;
+    strenghtEnemy = Math.floor(levelEnemy * 4.4);
+    atacksEnemy = ["placaje", "huesomerang", "bofetón lodo"]
+    break;
+
+case 2:
+    nameEnemy = "Zigzagoon";
+    gifEnemy.setAttribute("src", "Images/Pokemon_Sprites/zigzagoon.gif");
+    type = "🔘"
+    levelEnemy = parseInt((Math.random()*4)+2)
+    maxHealthEnemy = parseInt((levelEnemy) * (-0.01 * levelEnemy + 2.4));
+    actualHealthEnemy = maxHealthEnemy;
+    strenghtEnemy = Math.floor(levelEnemy * 4.4);
+    atacksEnemy = ["placaje", "ataque rápido"]
+    break;
+
+case 3:
+    nameEnemy = "Growlithe";
+    gifEnemy.setAttribute("src", "Images/Pokemon_Sprites/Growlithe.gif");
+    type = "🔥"
+    levelEnemy = parseInt((Math.random()*5)+4)
+    maxHealthEnemy = parseInt((levelEnemy) * (-0.01 * levelEnemy + 2.4));
+    actualHealthEnemy = maxHealthEnemy;
+    strenghtEnemy = Math.floor(levelEnemy * 4.4);
+    atacksEnemy = ["placaje", "ascuas", "colmillo ígneo"]
+    break;
+
+case 4:
+    nameEnemy = "Charmander";
+    gifEnemy.setAttribute("src", "Images/Pokemon_Sprites/charmander.gif");
+    type = "🔥"
+    levelEnemy = parseInt((Math.random()*5)+5)
+    maxHealthEnemy = parseInt((levelEnemy) * (-0.01 * levelEnemy + 2.4));
+    actualHealthEnemy = maxHealthEnemy;
+    strenghtEnemy = Math.floor(levelEnemy * 4.4);
+    atacksEnemy = ["ascuas", "colmillo ígneo", "garra metal"]
+    break;
+
+case 5:
+    nameEnemy = "Makuhita";
+    gifEnemy.setAttribute("src", "Images/Pokemon_Sprites/makuhita.gif");
+    type = "👊"
+    levelEnemy = parseInt((Math.random()*3)+8)
+    maxHealthEnemy = parseInt((levelEnemy) * (-0.01 * levelEnemy + 2.8));
+    actualHealthEnemy = maxHealthEnemy;
+    strenghtEnemy = Math.floor(levelEnemy * 2.4);
+    atacksEnemy = ["placaje", "puño certero", "golpe cuerpo"]
+    break;
+
+case 6:
+    nameEnemy = "Magikarp";
+    gifEnemy.setAttribute("src", "Images/Pokemon_Sprites/magikarp.gif");
+    type = "💧"
+    levelEnemy = parseInt((Math.random()*3)+4)
+    maxHealthEnemy = parseInt((levelEnemy) * (-0.01 * levelEnemy + 1.4));
+    actualHealthEnemy = maxHealthEnemy;
+    strenghtEnemy = Math.floor(levelEnemy * 1);
+    atacksEnemy = ["placaje"]
+    break;
+
+case 7:
+    nameEnemy = "Squirtle";
+    gifEnemy.setAttribute("src", "Images/Pokemon_Sprites/squirtle.gif");
+    type = "💧"
+    levelEnemy = parseInt((Math.random()*3)+5)
+    maxHealthEnemy = parseInt((levelEnemy) * (-0.01 * levelEnemy + 2.4));
+    actualHealthEnemy = maxHealthEnemy;
+    strenghtEnemy = Math.floor(levelEnemy * 2.4);
+    atacksEnemy = ["placaje", "burbuja", "pistola agua"]
+    break;
+
+case 8:
+    nameEnemy = "Goldeen";
+    gifEnemy.setAttribute("src", "Images/Pokemon_Sprites/goldeen.gif");
+    type = "💧"
+    levelEnemy = parseInt((Math.random()*3)+4)
+    maxHealthEnemy = parseInt((levelEnemy) * (-0.01 * levelEnemy + 1.6));
+    actualHealthEnemy = maxHealthEnemy;
+    strenghtEnemy = Math.floor(levelEnemy * 1.4);
+    atacksEnemy = ["burbuja", "pistola agua"]
+    break;
+
+case 9:
+    nameEnemy = "Lairon";
+    gifEnemy.setAttribute("src", "Images/Pokemon_Sprites/laiton.gif");
+    type = "⚙️"
+    levelEnemy = parseInt((Math.random()*3)+12)
+    maxHealthEnemy = parseInt((levelEnemy) * (-0.01 * levelEnemy + 3.8));
+    actualHealthEnemy = maxHealthEnemy;
+    strenghtEnemy = Math.floor(levelEnemy * 2.8);
+    atacksEnemy = ["placaje", "lanzarrocas", "cola férrea", "garra metal"]
+    break;
+
+case 10:
+    nameEnemy = "Larvitar";
+    gifEnemy.setAttribute("src", "Images/Pokemon_Sprites/larvitar.gif");
+    type = "🪨"
+    levelEnemy = parseInt((Math.random()*3)+7)
+    maxHealthEnemy = parseInt((levelEnemy) * (-0.01 * levelEnemy + 3.6));
+    actualHealthEnemy = maxHealthEnemy;
+    strenghtEnemy = Math.floor(levelEnemy * 2.4);
+    atacksEnemy = ["lanzarrocas", "golpe roca"]
+    break;
+
+case 11:
+    nameEnemy = "Solrock";
+    gifEnemy.setAttribute("src", "Images/Pokemon_Sprites/solrock.gif");
+    type = "🪨"
+    levelEnemy = parseInt((Math.random()*3)+7)
+    maxHealthEnemy = parseInt((levelEnemy) * (-0.01 * levelEnemy + 3.6));
+    actualHealthEnemy = maxHealthEnemy;
+    strenghtEnemy = Math.floor(levelEnemy * 2.4);
+    atacksEnemy = ["golpe roca", "placaje", "lanzarrocas"]
+    break;
+
+case 12:
+    nameEnemy = "Chikorita";
+    gifEnemy.setAttribute("src", "Images/Pokemon_Sprites/chikorita.gif");
+    type = "🌿";
+    levelEnemy = parseInt((Math.random() * 5) + 10);
+    maxHealthEnemy = parseInt((levelEnemy) * (-0.01 * levelEnemy + 2.4));
+    actualHealthEnemy = maxHealthEnemy;
+    atacksEnemy = ["latigo cepa", "absorber", "hoja afilada"]
+    break;
+
+case 13:
+    nameEnemy = "Cacnea";
+    gifEnemy.setAttribute("src", "Images/Pokemon_Sprites/cacnea.gif");
+    type = "🌿";
+    levelEnemy = parseInt((Math.random() * 5) + 10);
+    maxHealthEnemy = parseInt((levelEnemy) * (-0.01 * levelEnemy + 2.4));
+    actualHealthEnemy = maxHealthEnemy;
+    atacksEnemy = ["placaje", "absorber", "hoja afilada"]
+    break;
+
+case 14:
+    nameEnemy = "Raticate";
+    gifEnemy.setAttribute("src", "Images/Pokemon_Sprites/raticate.gif");
+    type = "🔘";
+    levelEnemy = parseInt((Math.random() * 2) + 20);
+    maxHealthEnemy = parseInt((levelEnemy) * (-0.01 * levelEnemy + 2.4));
+    actualHealthEnemy = maxHealthEnemy;
+    atacksEnemy = ["placaje", "mordisco", "ataque rápido"]
+    break;
+
+case 15:
+    nameEnemy = "Jolteon";
+    gifEnemy.setAttribute("src", "Images/Pokemon_Sprites/jolteon.gif");
+    type = "👻";
+    levelEnemy = parseInt((Math.random() * 5) + 22);
+    maxHealthEnemy = parseInt((levelEnemy) * (-0.01 * levelEnemy + 2.4));
+    actualHealthEnemy = maxHealthEnemy;
+    atacksEnemy = ["placaje", "chispa", "ataque rápido"]
+    break;
+
+case 16:
+    nameEnemy = "Sandslash";
+    gifEnemy.setAttribute("src", "Images/Pokemon_Sprites/sandslash.gif");
+    type = "🏔️";
+    levelEnemy = parseInt((Math.random() * 5) + 22);
+    maxHealthEnemy = parseInt((levelEnemy) * (-0.01 * levelEnemy + 2.4));
+    actualHealthEnemy = maxHealthEnemy;
+    atacksEnemy = ["placaje", "huesomerang", "terremoto"]
+    break;
+
+case 17:
+    nameEnemy = "Primeape";
+    gifEnemy.setAttribute("src", "Images/Pokemon_Sprites/primeape.gif");
+    type = "👊";
+    levelEnemy = parseInt((Math.random() * 3) + 28);
+    maxHealthEnemy = parseInt((levelEnemy) * (-0.01 * levelEnemy + 2.4));
+    actualHealthEnemy = maxHealthEnemy;
+    atacksEnemy = ["placaje", "puño certero", "golpe cuerpo"]
+    break;
+
+case 18:
+    nameEnemy = "Camerupt";
+    gifEnemy.setAttribute("src", "Images/Pokemon_Sprites/camerupt.gif");
+    type = "🔥";
+    levelEnemy = parseInt((Math.random() * 5) + 32);
+    maxHealthEnemy = parseInt((levelEnemy) * (-0.01 * levelEnemy + 2.4));
+    actualHealthEnemy = maxHealthEnemy;
+    atacksEnemy = ["ascuas", "terremoto", "fuego fatuo"]
+    break;
+
+case 19:
+    nameEnemy = "Weavile";
+    gifEnemy.setAttribute("src", "Images/Pokemon_Sprites/weavile.gif");
+    type = "🌑";
+    levelEnemy = parseInt((Math.random() * 5) + 32);
+    maxHealthEnemy = parseInt((levelEnemy) * (-0.01 * levelEnemy + 2.4));
+    actualHealthEnemy = maxHealthEnemy;
+    atacksEnemy = ["mordisco", "cuchillada", "garra sombra"]
+    break;
+
+
+
+    case 20:
+         nameEnemy = "Golem";
+    gifEnemy.setAttribute("src", "Images/Pokemon_Sprites/golem.gif");
+    type = "🪨";
+    levelEnemy = parseInt((Math.random() * 5) + 25);
+    maxHealthEnemy = parseInt((levelEnemy) * (-0.01 * levelEnemy + 2.4));
+    actualHealthEnemy = maxHealthEnemy;
+    atacksEnemy = ["golpe roca", "terremoto", "placaje"]
+    break;
+
+    levelEnemy = parseInt((Math.random() * 5) + 25);
+    maxHealthEnemy = parseInt((levelEnemy) * (-0.01 * levelEnemy + 2.4));
+    actualHealthEnemy = maxHealthEnemy;
+    break;
+
+
+    case 30:
+    failAtack = 0;
+
+    nameEnemy = "Geodude";
+    gifEnemy.setAttribute("src", "Images/Pokemon_Sprites/geodude.gif");
+    
+    type = "🪨";
+    levelEnemy = parseInt(16);
+    maxHealthEnemy = parseInt((levelEnemy) * (-0.01 * levelEnemy + 2.4));
+    actualHealthEnemy = maxHealthEnemy;
+    atacksEnemy = ["golpe roca", "terremoto", "placaje"]
+    break;
+
+    levelEnemy = parseInt((Math.random() * 5) + 25);
+    maxHealthEnemy = parseInt((levelEnemy) * (-0.01 * levelEnemy + 2.4));
+    actualHealthEnemy = maxHealthEnemy;
+    break;
+    }
+    
+
+    
+    
+    
+    battleOutput.innerHTML = `Un ${nameEnemy} salvaje, qué hara pikachu?`
+    sumxp = parseInt(maxHealthEnemy*1.2)
+    pokemonEncounter = 0;
+
+    
+
+
+}
+
+function bossBattle(leader){
+    switch(leader){
+        case 'brock':
+        
+         pokemonbattle(pokemonEncounter = 30);
+    
+         render();
+            
+            break;
+    }
+}
+
+
+function escape(){
+    var loseGold;
+    music.setAttribute("src", "sound/Runaway.mp3");
+    music.volume = 1
+    if(gold > 100){
+    loseGold = parseInt(Math.random()*20)+40;
+    battleOutput.innerHTML = `Has huido, pierdes ${loseGold} oro`
+    gold -= loseGold;
+    }
+    else{
+         battleOutput.innerHTML = `Has huido`
+    }
+   
+    audio.play();
+        setTimeout(function(){  
+        showmap();
+        },1400);
+    
+}
+
+function atack(movement){
+document.getElementById("atacks").style.pointerEvents = 'none';
+document.getElementById("atacks").style.opacity = '0.75';
+
+document.getElementById("items").style.pointerEvents = 'none';
+document.getElementById("items").style.opacity = '0.75';
+
+document.getElementById("options").style.pointerEvents = 'none';
+document.getElementById("options").style.opacity = '0.75';
+
+
+
+    if(actualHealthEnemy <= 0){
+             endBattle(win);
+        }
+
+
+    var damageDealt = 0;
+    var afterHealth = 10;
+    var efectivenes = 1;
+    var extraInfoAtack="";
+    
+    var efecto = new Audio('sound/sfx/Tackle.mp3');
+    effect = "";
+    switch (movement) {
+        
+    case "rayo":
+        damageDealt = 3.5;
+        atackType = "⚡";
+         efecto = new Audio('sound/sfx/Thunder Shock part 1.mp3');
+        break;
+    case "placaje":
+        damageDealt = 3;
+        atackType = "🔘";
+    break;
+
+    case "gruñido":
+        efecto = new Audio('sound/sfx/Growl.mp3');
+    damageDealt = 0;
+    atackType = "🔘";
+    if(strenghtEnemy > maxHealthEnemy/2){
+    strenghtEnemy -= maxHealthEnemy/2;
+    extraInfoAtack= " el ataque de "+ nameEnemy+ " bajo";
+     
+    }
+    else{
+       extraInfoAtack= " el ataque de "+ nameEnemy+ " no puede bajar más"; 
+    }
+    
+    
+    break;
+
+    case "danza espada":
+    damageDealt = 0;
+    atackType = "🔘";
+    extraInfoAtack= " tu ataque ha subido";
+    strength += 2;
+    efecto = new Audio('sound/sfx/Swords Dance.mp3');
+    break;
+    case "impactrueno":
+    damageDealt = 4;
+    atackType = "⚡";
+    efecto = new Audio('sound/sfx/Thunder Shock part 1.mp3');
+    break;
+
+    case "cola ferrea":
+    damageDealt = 4;
+    atackType = "⚙️";
+    break;
+    case "giga impacto":
+    damageDealt = (1 - (actualHealth / maxHealth))*6;
+    atackType = "⚡";
+         efecto = new Audio('sound/sfx/Thunder Shock part 1.mp3');
+        break;
+    case "tajo aereo":
+    damageDealt = 3.5;
+    atackType = "🪶";
+        break;
+    case "avalancha":
+    damageDealt = 3.5;
+    atackType = "🪨";
+        break;
+    case "escavar":
+    damageDealt = 4;
+    atackType = "🏔️";
+        break;
+    case "carantoña":
+    damageDealt = 3;
+    atackType = "🧚‍♀️";
+        break;
+    case "demolicion":
+    damageDealt = 4;
+    atackType = "👊";
+        break;
+    case "ladron":
+    damageDealt = 1;
+    atackType = "🌑";
+    var posibilities = Math.random();
+    if(posibilities <= 0.33){
+        gold +=50;
+        extraInfoAtack= " robaste 50 de oro";
+    }
+    else if (posibilities > 0.33 <= 0.66){
+        gold +=100;
+        extraInfoAtack= " robaste 100 de oro";
+    }
+    else if(posibilities > 0.66){
+        potions +=1;
+        extraInfoAtack= " robaste una pocion";
+    }
+    else{
+        extraInfoAtack= " no robasre nada";
+    }
+   
+        break;
+    case "puño trueno":
+    damageDealt = 5;
+    atackType = "⚡";
+         efecto = new Audio('sound/sfx/Thunder Shock part 1.mp3');
+        break;
+}
+
+if(atackType == "⚡"){
+    if (type == "🪶" || type == "💧"){
+        efectivenes = 1.8;
+     
+    }
+    else if(type == "🪨" || type == "⚡"){
+        efectivenes = 0.5;
+   
+    }
+    else if(type == "🏔️"){
+        efectivenes = 0;
+        damageDealt = 0;
+    }
+    else{
+        efectivenes = 1;
+    }
+}
+else if(atackType == "🪨"){
+    if (type == "🪲" || type == "🔥"){
+        efectivenes = 1.8;
+   
+    }
+    else if(type == "💧" || type == "🌿" || type == "⚙️"){
+        efectivenes = 0.5;
+    
+    }
+    else{
+        efectivenes = 1;
+    }
+}
+else if (atackType == "🧿"){
+    if (type == "👊" || type == "🧪"){
+        efectivenes = 1.8;
+      
+    }
+    else if(type == "🔥" || type == "🌿" || type == "🧿"){
+        efectivenes = 0.5;
+   
+    }
+    else{
+        efectivenes = 1;
+    }    
+}
+else if (atackType == "🔘"){
+    if(type == "⚙️" || type == "👊" || type == "🪨"){
+        efectivenes = 0.5;
+      
+    }
+    else{
+        efectivenes = 1;
+    }  
+
+}
+else if (atackType == "👊"){
+    if (type == "🔘" || type == "🌑"|| type == "🪨"|| type == "⚙️" || type == "❄️" ){
+        efectivenes = 1.8;
+    }
+    else if(type == "🪶" || type == "🪲" || type == "🧚‍♀️"|| type == "🌑" || type == "🧿" || type == "🧪"){
+        efectivenes = 0.5;
+    }
+    else{
+        efectivenes = 1;
+    }  
+
+}
+
+var failAtack = parseInt(Math.random() * 10)
+
+
+ efecto.play();
+
+if (efectivenes == 1.8 && damageDealt != 0){
+    battleOutput.innerHTML = `Has usado ${movement}, es muy efectivo` + extraInfoAtack;
+}
+
+else if (efectivenes == 0.5 && damageDealt != 0){
+    battleOutput.innerHTML = `Has usado ${movement}, es poco efectivo`+ extraInfoAtack;
+}
+else if(efectivenes == 0){
+    battleOutput.innerHTML = `Has usado ${movement}, no afecta a ${nameEnemy}`;
+}
+else{
+ 
+ battleOutput.innerHTML = `Has usado ${movement}`+ extraInfoAtack;
+}
+
+
+if (effect == "sumStrenght"){
+        battleOutput.innerHTML = `Has usado ${movement}, tu fuerza aumenta`;
+}
+if (effect == "subStrenght"){
+        battleOutput.innerHTML = `Has usado ${movement}, la fuerza de ${nameEnemy} bajo`;
+    }
+
+    
+
+
+if (failAtack > damageDealt-2 ){
+    afterHealth = actualHealthEnemy - (damageDealt * Math.sqrt(strength) * efectivenes * Math.sqrt(level) * 0.05)*5;
+}
+else{
+    battleOutput.innerHTML = `Has usado ${movement}, pero el ataque falló`;
+    afterHealth = actualHealthEnemy+1;
+}
+    
+
+  console.log("fail atack: ", failAtack, " damage dealt ", damageDealt-2);
+
+    
+
+
+
+
+    var steps = actualHealthEnemy - afterHealth;
+    for (let i = 0; i <= steps && actualHealthEnemy >= 0; i++) {
+        if(actualHealthEnemy > 0){
+        setTimeout(function() {
+            if(actualHealthEnemy > 0 && damageDealt > 0){
+        actualHealthEnemy -= 1;
+    }    
+        render();
+            }, i * 200 / (actualHealthEnemy*0.25));
+            
+            timerWait = i * 200
+        }
+   
+}
+
+
+
+
+
+
+if (actualHealthEnemy <= 0){
+    actualHealthEnemy = 0;
+}
+
+
+render();
+
+
+
+if (actualHealthEnemy <= 0){
+
+    endBattle();
+    render();
+    
+}else{
+    render();
+    setTimeout(function(){  
+        enemyturn();
+        },900 + timerWait);
+   
+    }
+
+}
+
+function enemyturn(){
+
+    if(actualHealthEnemy <= 0){
+             endBattle(win);
+        } else{
+            setTimeout(function(){  
+         enemyAtack(atacksEnemy[Math.floor(Math.random() * atacksEnemy.length)])
+         
+        },Math.random()*2000);
+}
+      
+function enemyAtack(movement){
+
+
+
+    setTimeout(function(){ 
+document.getElementById("atacks").style.pointerEvents = 'auto';
+document.getElementById("atacks").style.opacity = '1';
+
+document.getElementById("items").style.pointerEvents = 'auto';
+document.getElementById("items").style.opacity = '1';
+
+document.getElementById("options").style.pointerEvents = 'auto';
+document.getElementById("options").style.opacity = '1';
+        
+      }, 400);
+
+
+    var damageDealt = 0;
+    var afterHealth = 10; 
+    var efecto = new Audio('sound/sfx/Tackle.mp3');
+    var failAtack = parseInt(Math.random() * 10)
+    console.log("enemy fail atack:", failAtack)
+
+    switch(movement){
+        case "latigo cepa":
+            damageDealt = (strenghtEnemy/3.5);
+            afterHealth = actualHealth - damageDealt;
+            atackType = "🌿";
+            break;
+        case "placaje":
+        damageDealt = (strenghtEnemy/3.5);
+        afterHealth = actualHealth - damageDealt;
+        atackType = "🔘";
+        break;
+        case "absorber":
+        atackType = "🌿";
+        efecto = new Audio('sound/sfx/Giga Drain part 2.mp3');
+        damageDealt = 0;
+        if (actualHealthEnemy > maxHealthEnemy * 0.75) {
+        actualHealthEnemy = maxHealthEnemy;}
+     else {
+            actualHealthEnemy += parseInt(maxHealthEnemy * 0.25);
+            if (actualHealthEnemy > maxHealthEnemy) {
+                actualHealthEnemy = maxHealthEnemy; 
+            }
+        }
+        render();
+
+        
+        break;
+        case "huesomerang":
+            damageDealt = (strenghtEnemy/3);
+            afterHealth = actualHealth - damageDealt;
+            atackType = "🪨";
+            break;
+        case "ascuas":
+            damageDealt = (strenghtEnemy/4);
+            afterHealth = actualHealth - damageDealt;
+            atackType = "🔥";
+            break;
+                case "burbuja":
+            damageDealt = (strenghtEnemy / 4);
+            afterHealth = actualHealth - damageDealt;
+            atackType = "💧";
+            break;
+
+        case "puño certero":
+            damageDealt = (strenghtEnemy / 2.8); 
+            afterHealth = actualHealth - damageDealt;
+            atackType = "👊";
+            break;
+
+        case "hoja afilada":
+            damageDealt = (strenghtEnemy / 3);
+            afterHealth = actualHealth - damageDealt;
+            atackType = "🌿";
+            break;
+
+        case "lanzarrocas":
+            damageDealt = (strenghtEnemy / 2.8);
+            afterHealth = actualHealth - damageDealt;
+            atackType = "🪨";
+            break;
+
+        case "mordisco":
+            damageDealt = (strenghtEnemy / 3.5);
+            afterHealth = actualHealth - damageDealt;
+            atackType = "🌑";
+            break;
+
+        case "colmillo ígneo":
+            damageDealt = (strenghtEnemy / 3.2);
+            afterHealth = actualHealth - damageDealt;
+            atackType = "🔥";
+            break;
+
+        case "pistola agua":
+            damageDealt = (strenghtEnemy / 4.2);
+            afterHealth = actualHealth - damageDealt;
+            atackType = "💧";
+            break;
+
+        case "golpe cuerpo":
+            damageDealt = (strenghtEnemy / 3.4);
+            afterHealth = actualHealth - damageDealt;
+            atackType = "🔘";
+            break;
+
+        case "garra metal":
+            damageDealt = (strenghtEnemy / 3.3);
+            afterHealth = actualHealth - damageDealt;
+            atackType = "⚙️";
+            break;
+        case "chispa":
+            damageDealt = (strenghtEnemy / 3.5);
+            afterHealth = actualHealth - damageDealt;
+            atackType = "⚡";
+            break;
+
+        case "garra sombra":
+            damageDealt = (strenghtEnemy / 3.2);
+            afterHealth = actualHealth - damageDealt;
+            atackType = "👻";
+            break;
+
+        case "cola férrea":
+            damageDealt = (strenghtEnemy / 3);
+            afterHealth = actualHealth - damageDealt;
+            atackType = "⚙️";
+            break;
+
+        case "terremoto":
+            damageDealt = (strenghtEnemy / 2.5); 
+            afterHealth = actualHealth - damageDealt;
+            atackType = "🏔️";
+            break;
+
+        case "cuchillada":
+            damageDealt = (strenghtEnemy / 3.3);
+            afterHealth = actualHealth - damageDealt;
+            atackType = "🔘";
+            break;
+
+        case "bofetón lodo":
+            damageDealt = (strenghtEnemy / 3.8);
+            afterHealth = actualHealth - damageDealt;
+            atackType = "🏔️";
+            break;
+
+        case "golpe roca":
+            damageDealt = (strenghtEnemy / 3.1);
+            afterHealth = actualHealth - damageDealt;
+            atackType = "🪨";
+            break;
+
+        case "fuego fatuo":
+            damageDealt = 0;
+            atackType = "🔥";
+     
+            break;
+
+        case "rayo hielo":
+            damageDealt = (strenghtEnemy / 3);
+            afterHealth = actualHealth - damageDealt;
+            atackType = "❄️";
+            break;
+
+        case "ataque rápido":
+            damageDealt = (strenghtEnemy / 4.2);
+            afterHealth = actualHealth - damageDealt;
+            atackType = "🔘";
+            break;
+
+    }
+    
+ efecto.play();
+ 
+if (failAtack > 2){
+ 
+    if(atackType == "🌿" || atackType == "⚡" || atackType == "🏔️" || atackType == "🪨"){
+        efectivenes = 1.8;
+    }
+    else if(atackType == "🪶" || type == "💧"){
+        efectivenes = 0.5;
+    }
+    else{
+        efectivenes = 1;
+    }
+
+
+    if (efectivenes == 1.8){
+       
+        battleOutput.innerHTML = `${nameEnemy} ha usado ${movement} es muy efectivo` ;
+    }
+    else if (efectivenes == 0.5){
+        battleOutput.innerHTML = `${nameEnemy} ha usado ${movement} es poco efectivo` ;
+    }
+    else{
+        battleOutput.innerHTML = `${nameEnemy} ha usado ${movement}`;
+    }
+   
+
+    
+
+    var steps = actualHealth - afterHealth;
+    for (let i = 1; i <= steps; i++ && actualHealth > 0) {
+        setTimeout(function(){
+            if(actualHealth <=0){
+            
+            
+            loseBatle();
+        }
+        else{
+            actualHealth -= 1;
+        }
+            render();
+        }, i * 200);
+    }
+        }
+
+    else{
+
+        battleOutput.innerHTML = `${nameEnemy} ha usado ${movement}, pero el movimiento falló`;
+         
+       
+    }
+    }
+    
+    let steps = actualHealth - afterHealth;
+let loseTriggered = false;
+
+for (let i = 1; i <= steps; i++) {
+    setTimeout(function () {
+        if (actualHealth > 0) {
+            actualHealth -= 1;
+            render();
+        }
+
+        if (actualHealth <= 0 && !loseTriggered) {
+            loseBatle();
+            loseTriggered = true;
+        }
+    }, i * 200);
+}
+
+}
+
+function heal(object)
+
+{   
+   var info = document.getElementById("info");
+                    info.style.display = 'none'
+
+    var efecto = new Audio('sound/sfx/In-Battle Heal HP Restore.mp3'); 
+    switch(object){
+
+        case "potion":
+        if (potions >= 1 && actualHealth != maxHealth){
+             document.getElementById("atacks").style.pointerEvents = 'none';
+            document.getElementById("atacks").style.opacity = '0.75';
+
+            document.getElementById("items").style.pointerEvents = 'none';
+            document.getElementById("items").style.opacity = '0.75';
+
+            document.getElementById("options").style.pointerEvents = 'none';
+            document.getElementById("options").style.opacity = '0.75';
+            potions--;
+            if (actualHealth < maxHealth-10){
+            actualHealth += 10;
+            }
+            else{
+            actualHealth = maxHealth;
+            }
+             efecto.play()
+        battleOutput.innerHTML = `Has usado una ${object} te has curado`;
+        setTimeout(function(){
+            enemyturn();
+        }, 800);
+        }
+        else if(actualHealth = maxHealth){
+            battleOutput.innerHTML = `Tu salud esta al máximo`;
+        }
+        else{
+            battleOutput.innerHTML = `No quedan pociones`;
+        }
+        
+        break;
+        case "hyperpotion":
+        if (hyperPotions >= 1 && maxHealth != actualHealth){
+             document.getElementById("atacks").style.pointerEvents = 'none';
+            document.getElementById("atacks").style.opacity = '0.75';
+
+            document.getElementById("items").style.pointerEvents = 'none';
+            document.getElementById("items").style.opacity = '0.75';
+
+            document.getElementById("options").style.pointerEvents = 'none';
+            document.getElementById("options").style.opacity = '0.75';
+            hyperPotions--;
+            if (actualHealth < maxHealth-25){
+            actualHealth += 25;
+            
+            }
+            else{
+            actualHealth = maxHealth;
+            }
+         efecto.play()
+                if(document.getElementById("canvasmapa").style.display !== 'block'){
+                    battleOutput.innerHTML = `Has usado una ${object} te has curado`;
+                
+                setTimeout(function(){
+                    enemyturn();
+                }, 800);
+                }
+         }
+        else if(maxHealth = actualHealth){
+            battleOutput.innerHTML = `Tu salud esta al máximo`;
+        }
+        else{
+            battleOutput.innerHTML = `No quedan hiperpociones`;
+        }
+        break;
+        case "rareCandy":
+            
+        if (rareCandy >= 1){
+             document.getElementById("atacks").style.pointerEvents = 'none';
+            document.getElementById("atacks").style.opacity = '0.75';
+
+            document.getElementById("items").style.pointerEvents = 'none';
+            document.getElementById("items").style.opacity = '0.75';
+
+            document.getElementById("options").style.pointerEvents = 'none';
+            document.getElementById("options").style.opacity = '0.75';
+                        efecto = new Audio('sound/sfx/LevelUp.mp3'); 
+             efecto.play()
+            rareCandy--;
+            level+=1;
+            strength = Math.floor(level * 1.4);
+            newLevel = parseInt(maxHealth*2);
+            maxHealth = parseInt((level) * (-0.01 * level + 2.4));
+            render();
+        
+        battleOutput.innerHTML = `Has usado una ${object} subes un nivel`;
+        setTimeout(function(){
+            enemyturn();
+        }, 800);
+        }
+        else{
+            battleOutput.innerHTML = `No quedan caramelos`;
+        }
+        break;
+        case "stone":
+            
+        if (stone >= 1){
+             document.getElementById("atacks").style.pointerEvents = 'none';
+            document.getElementById("atacks").style.opacity = '0.75';
+
+            document.getElementById("items").style.pointerEvents = 'none';
+            document.getElementById("items").style.opacity = '0.75';
+
+            document.getElementById("options").style.pointerEvents = 'none';
+            document.getElementById("options").style.opacity = '0.75';
+                        efecto = new Audio('sound/sfx/Tackle.mp3'); 
+             efecto.play()
+            stone--;
+            actualHealthEnemy -= parseInt(maxHealthEnemy*0.1+1);
+            render();
+        
+        battleOutput.innerHTML = `Has tirado una piedra en la cabeza de ${nameEnemy}`;
+        setTimeout(function(){
+            enemyturn();
+        }, 800);
+        }
+        else{
+            battleOutput.innerHTML = `No quedan piedras`;
+        }
+        break;
+    }
+    
+render();
+
+
+    
+}
+
+   function loseBatle(){
+    gold = parseInt(gold/2)
+    escape();
+    
+
+      }
+function endBattle(win) {
+    actualHealthEnemy = 0;
+
+    var experienceToAdd = sumxp;
+    var winGold = parseInt(Math.random()*100*levelEnemy)+50;
+    
+    gold += winGold;
+    function addXpStepByStep() {
+        if (experienceToAdd > 0) {
+            xp += 1;
+            
+            experienceToAdd -= 1;
+
+            if (xp >= newLevel) {
+                level++;
+                xp = 0;
+                maxHealth += parseInt(level*0.2);
+                if(actualHealth < maxHealth/3){
+                    actualHealth = parseInt(maxHealth/2);
+                }
+                else if(actualHealth < maxHealth/2){
+                    actualHealth = parseInt(maxHealth/1.5);
+                }
+                else{
+                    actualHealth = maxHealth;
+                }
+                
+                newLevel = maxHealth*2;
+            }
+
+            render();
+            setTimeout(addXpStepByStep, 100 / sumxp);
+        }
+        
+    }
+    timerWait == sumxp*50;
+    addXpStepByStep();
+
+   
+   
+        
+    
+    battleOutput.innerHTML = `Has ganado ${sumxp} de xp y ${winGold} oro`
+    music.setAttribute("src", "sound/winbatle.mp3");
+    audio.play()
+    render();
+    if (xp => sumxp){
+        setTimeout(function(){
+    
+    showmap();
+    render();
+   }, 3000);
+    }
+    
+     
+
+
+}
+
+
+
+
+
+
+
+
+            
+        
+    </script>
+</body>
+</html>
