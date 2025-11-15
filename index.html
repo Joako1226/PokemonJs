@@ -290,7 +290,7 @@
     <div id="canvasmapa">
         <div id="stage"></div>
         <div id="output"> <img src="gyarados.gif" style=" width: 100px; height: 100px;"> <br> yo soy listo y tu tonto yo soy listo y tu tonto yo soy listo y tu tontoyo soy listo y tu tontoyo soy listo y tu tontoyo soy listo y tu tontoyo soy listo y tu tontoyo soy listo y tu tontoyo soy listo y tu tontoyo soy listo y tu tontoyo soy listo y tu tontoyo soy listo y tu tontoyo soy listo y tu tonto  yo soy listo y tu tontoyo soy listo y tu tonto  yo soy listo y tu tonto yo soy listo y tu tonto yo soy listo y tu tonto yo soy listo y tu tonto </div>
-        <div id="info"><img src="/Images/Pokemon_Sprites/pikachu.gif" style="transform: translateX(32px);"> <br> Pikachu level 5f </div>
+        <div id="info"><img src="./Images/Pokemon_Sprites/pikachu.gif" style="transform: translateX(32px);"> <br> Pikachu level 5f </div>
    
     </div>
     
@@ -308,7 +308,7 @@
     
           <div class="middle-row">
             
-            <div class="sprite-box"><img src="/Images/Pokemon_Sprites/pikachu.gif" alt="pikachu" style="transform: scaleX(-1) translateX(25px) translateY(-5px) scale(1.2);"></div>
+            <div class="sprite-box"><img src="./Images/Pokemon_Sprites/pikachu.gif" alt="pikachu" style="transform: scaleX(-1) translateX(25px) translateY(-5px) scale(1.2);"></div>
            
             <div class="info-box" id="pikachu-info">
                 
@@ -413,7 +413,7 @@
         var pokemonColumn;
         var pikachu_sprite = "Images/Pokemon_Sprites/pikachu/pikachu_Right.png";
 
-        var player_sprite = "Images/Player_Sprites/PlayerRight.png";
+        var player_sprite = "./Images/Player_Sprites/PlayerRight.png";
 
 
         var win, lose;
@@ -513,13 +513,13 @@ var allAtacks = [
         music.setAttribute("src", "sound/Heal.mp3");
         audio.play();
         output.innerHTML =` 
-                <img src="/Images/NPC/ProfilePics/JoyProfile.png" style=" width: 100px; height: 100px;"> <b>Enfermera joy </b> <p><br></p> <p> Tus pokemon han sido restaurados </p> <p><br></p> <p><br></p><p><br></p><p><br></p><p>
+                <img src="./Images/NPC/ProfilePics/JoyProfile.png" style=" width: 100px; height: 100px;"> <b>Enfermera joy </b> <p><br></p> <p> Tus pokemon han sido restaurados </p> <p><br></p> <p><br></p><p><br></p><p><br></p><p>
                 `;
         setTimeout(function(){   
             music.setAttribute("src", "sound/ForestMusic.wav");
             audio.play();
             output.innerHTML =` 
-                <img src="/Images/NPC/ProfilePics/JoyProfile.png" style=" width: 100px; height: 100px;"> <b>Enfermera joy </b> <p> <br></p> <p> Hola, que servicio necesitavas?</p> <button  onclick="fullRestore()" class="btn" style="background-color: rgb(255, 110, 255);">Curar a tu pokemon</button> <button onclick="changeAtacks" class="btn" style="background-color: rgb(100, 110, 255);">Cambiar movimientos</button>
+                <img src="./Images/NPC/ProfilePics/JoyProfile.png" style=" width: 100px; height: 100px;"> <b>Enfermera joy </b> <p> <br></p> <p> Hola, que servicio necesitavas?</p> <button  onclick="fullRestore()" class="btn" style="background-color: rgb(255, 110, 255);">Curar a tu pokemon</button> <button onclick="changeAtacks" class="btn" style="background-color: rgb(100, 110, 255);">Cambiar movimientos</button>
                 `;
         },1900);
        
@@ -527,7 +527,7 @@ var allAtacks = [
 
     function changeAtacks(){
         output.innerHTML = `
-  <img src="/Images/NPC/ProfilePics/JoyProfile.png" style="width:100px;height:100px;">
+  <img src="./Images/NPC/ProfilePics/JoyProfile.png" style="width:100px;height:100px;">
   <b>Enfermera joy</b>
   <p><br></p>
   <p>Que movimientos deseas cambiar?</p>
@@ -678,15 +678,15 @@ var allAtacks = [
       <img src="https://i1.sndcdn.com/artworks-Pcsx6B0avEVYHzT5-IzJGzQ-t500x500.jpg" alt="Entrenador" style="height: 120px; margin-left: 10px;">
       
       <div style="display: flex; gap: 10px; margin-right: 10px;">
-        <img src="/Images/Medals/Medalla_Roca.png" style="height: 40px;"> <p>❌</p>
-        <img src="/Images/Medals/Medalla_Cascada.png" alt="Medalla 2" style="height: 40px;"><p>❌</p>
-        <img src="/Images/Medals/Medalla_Tierra.png" alt="Medalla 3" style="height: 40px;"><p>❌</p>
+        <img src="./Images/Medals/Medalla_Roca.png" style="height: 40px;"> <p>❌</p>
+        <img src="./Images/Medals/Medalla_Cascada.png" alt="Medalla 2" style="height: 40px;"><p>❌</p>
+        <img src="./Images/Medals/Medalla_Tierra.png" alt="Medalla 3" style="height: 40px;"><p>❌</p>
       </div>
     </div>
 
     <!-- Sprite -->
     <div class="sprite-box" style="margin-top: 10px;">
-      <img src="/Images/Pokemon_Sprites/pikachu.gif" alt="Pikachu">
+      <img src="./Images/Pokemon_Sprites/pikachu.gif" alt="Pikachu">
     </div>
 
     <!-- Info Pokémon -->
@@ -847,13 +847,13 @@ render()
         switch (person){
             case "joy":
             output.innerHTML =` 
-                <img src="/Images/NPC/ProfilePics/JoyProfile.png" style=" width: 100px; height: 100px;"> <b>Enfermera joy </b> <p> <br></p> <p> Hola, que servicio necesitavas?</p> <button  onclick="fullRestore()" class="btn" style="background-color: rgb(255, 110, 255);">Curar a tu pokemon</button> <button onclick="changeAtacks()" class="btn" style="background-color: rgb(100, 110, 255);">Cambiar movimientos</button>
+                <img src="./Images/NPC/ProfilePics/JoyProfile.png" style=" width: 100px; height: 100px;"> <b>Enfermera joy </b> <p> <br></p> <p> Hola, que servicio necesitavas?</p> <button  onclick="fullRestore()" class="btn" style="background-color: rgb(255, 110, 255);">Curar a tu pokemon</button> <button onclick="changeAtacks()" class="btn" style="background-color: rgb(100, 110, 255);">Cambiar movimientos</button>
                 `;
                 break;
                 
             case "oak":
             output.innerHTML =` 
-                <img src="/Images/NPC/ProfilePics/OakProfile.png" style=" width: 100px; height: 100px;">  <div id="boutique">
+                <img src="./Images/NPC/ProfilePics/OakProfile.png" style=" width: 100px; height: 100px;">  <div id="boutique">
             <p><br></p> 
                 <b>Profesor Oak</b>
                 <p></p><br>
@@ -876,14 +876,14 @@ render()
 
           case "brock":
             output.innerHTML =` 
-                <img src="/Images/NPC/ProfilePics/BrockProfile.png" style=" width: 100px; height: 100px;">  <div id="boutique">
+                <img src="./Images/NPC/ProfilePics/BrockProfile.png" style=" width: 100px; height: 100px;">  <div id="boutique">
             <p><br></p> 
                 <b>Lider Brock</b>
                 <p></p><br>
             <p>Hola, quieres luchar por la medalla de tipo roca?</p> 
             <br>
                     
-            <button onclick="bossBattle('brock')" class="btn" style="background-color: rgb(100, 110, 255);">Sí</button>
+            <button onclick="pokemonbattle(pokemonEncounter = 30)" class="btn" style="background-color: rgb(100, 110, 255);">Sí</button>
                  <button onclick="" class="btn" style="background-color: rgb(255, 11, 25);">No</button>
             <br>
          
@@ -1188,7 +1188,7 @@ function buy(){
     price = (buyPotion*200) + (buyHyperpotion*400) + (buyRareCandy*1000) + (buyStone*50)
     if (buyPotion>= 0 <=99 && buyHyperpotion>= 0 <=99 && buyRareCandy>= 0 <=99 && buyStone>= 0 <=99 && (buyPotion+buyHyperpotion+buyRareCandy+buyStone) > 0){
         output.innerHTML =` 
-                <img src="/Images/NPC/ProfilePics/OakProfile.png" style=" width: 100px; height: 100px;">  <div id="boutique">
+                <img src="./Images/NPC/ProfilePics/OakProfile.png" style=" width: 100px; height: 100px;">  <div id="boutique">
   <p><br></p> 
     <b>Profesor Oak</b>
     <p></p><br>
@@ -1213,7 +1213,7 @@ if(gold >= price){
     rareCandy += parseInt(buyRareCandy);
     stone += parseInt(buyStone);
     output.innerHTML =` 
-                <img src="/Images/NPC/ProfilePics/OakProfile.png" style=" width: 100px; height: 100px;">  <div id="boutique">
+                <img src="./Images/NPC/ProfilePics/OakProfile.png" style=" width: 100px; height: 100px;">  <div id="boutique">
   <p><br></p> 
     <b>Profesor Oak</b>
     <p></p><br>
@@ -1230,7 +1230,7 @@ if(gold >= price){
 }
 else{
     output.innerHTML =` 
-                <img src="/Images/NPC/ProfilePics/OakProfile.png" style=" width: 100px; height: 100px;">  <div id="boutique">
+                <img src="./Images/NPC/ProfilePics/OakProfile.png" style=" width: 100px; height: 100px;">  <div id="boutique">
   <p><br></p> 
     <b>Profesor Oak</b>
     <p></p><br>
@@ -1601,8 +1601,8 @@ case 19:
 function bossBattle(leader){
     switch(leader){
         case 'brock':
-        
-         pokemonbattle(pokemonEncounter = 30);
+        pokemonEncounter = 30
+         pokemonbattle();
     
          render();
             
